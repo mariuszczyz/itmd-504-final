@@ -1,0 +1,106 @@
+---
+- name: Install and configure web and database services
+  hosts: course-tracker
+  become: true
+
+  tasks:
+    - name: Install packages
+      ansible.builtin.dnf:
+        name:
+          - git
+          - python3
+          - python3-pip
+          - nodejs
+          - npm
+          - nginx
+          - mariadb114-server
+        state: present
+
+    - name: Enable and start nginx
+      ansible.builtin.systemd:
+        name: nginx
+        enabled: true
+        state: started
+
+    - name: Enable and start mariadb
+      ansible.builtin.systemd:
+        name: mariadb
+        enabled: true
+        state: started
+
+    - name: Create course_tracker database and user
+      ansible.builtin.shell: |
+        mysql -u root <<'EOF'
+        CREATE DATABASE IF NOT EXISTS course_tracker;
+        CREATE USER IF NOT EXISTS 'tracker'@'localhost' IDENTIFIED BY '{{ db_password }}';
+        GRANT ALL PRIVILEGES ON course_tracker.* TO 'tracker'@'localhost';
+        FLUSH PRIVILEGES;
+        EOF
+      args:
+        executable: /bin/bash
+
+    - name: Configure course-tracker systemd unit
+      ansible.builtin.copy:
+        dest: /etc/systemd/system/course-tracker.service
+        content: |
+          [Unit]
+          Description=Course Tracker Flask API
+          After=network.target mariadb.service
+
+          [Service]
+          User=ec2-user
+          WorkingDirectory=/home/ec2-user/course-tracker/backend
+          EnvironmentFile=/home/ec2-user/course-tracker/backend/.env
+          ExecStart=/usr/bin/python3 app.py
+          Restart=always
+
+          [Install]
+          WantedBy=multi-user.target
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Reload systemd
+
+    - name: Enable and start course-tracker
+      ansible.builtin.systemd:
+        name: course-tracker.service
+        enabled: true
+        state: started
+
+    - name: Configure nginx virtual host
+      ansible.builtin.copy:
+        dest: /etc/nginx/conf.d/course-tracker.conf
+        content: |
+          server {
+              listen 80;
+              server_name _;
+
+              root /home/ec2-user/course-tracker/frontend/build;
+              index index.html;
+
+              # React client-side routing
+              location / {
+                  try_files $uri /index.html;
+              }
+
+              # Proxy API calls to Flask
+              location /api/ {
+                  proxy_pass http://127.0.0.1:5000;
+                  proxy_set_header Host $host;
+                  proxy_set_header X-Real-IP $remote_addr;
+              }
+          }
+        owner: root
+        group: root
+        mode: '0644'
+      notify: Reload nginx
+
+  handlers:
+    - name: Reload systemd
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: Reload nginx
+      ansible.builtin.systemd:
+        name: nginx
+        state: reloaded

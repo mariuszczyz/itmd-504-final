@@ -1,0 +1,35 @@
+name: Deploy to AWS Lightsail
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.VM_IP }}
+          username: ${{ secrets.VM_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            set -e
+            cd /home/ec2-user/course-tracker
+
+            # Pull latest code
+            git pull origin main
+
+            # Install/update Python dependencies
+            pip3 install -r backend/requirements.txt
+
+            # Build React frontend
+            cd frontend
+            npm install
+            npm run build
+            cd ..
+
+            # Restart Flask backend
+            sudo systemctl restart course-tracker.service
