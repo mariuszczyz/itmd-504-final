@@ -1,5 +1,24 @@
 # ITMD 504 Programming and Application Foundations - Summative Course Assessement Project
 
+Course Tracker the final project for ITMD-504 (Programming Application Foundations). 
+
+It's a full-stack CRUD app with:
+
+Backend: A Flask REST API serving four endpoints against a MySQL database:
+- GET /api/courses (list all courses)
+- POST /api/courses (add a course)
+- PUT /api/courses/<id> (update a course)
+- DELETE /api/courses/<id> (delete a course)
+
+Frontend: A React.js + Bootstrap 5 app that provides the UI for managing courses.
+
+Additional features:
+- DB credentials stored in `.env`
+- CORS is restricted to localhost:3000
+- Server runs on port 5000
+- NGINX proxies all `/api` requests to Flask backend running on http://127.0.0.1
+- NGINX proxy forwards `Host` and `X-Real-IP` headers so backend can see the original client info
+
 ## High Level Deployment Overview
 
 Deploying the `course-tracker` application is done with the following high level steps:
@@ -92,6 +111,11 @@ Frontend (frontend/)
   - src/components/CourseForm.jsx -add/edit form
 
 ---
+
+## Application maintenance and updates
+
+
+
 
 ## How to run locally
 
