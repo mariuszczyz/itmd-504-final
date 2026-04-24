@@ -19,6 +19,21 @@ Additional features:
 - NGINX proxies all `/api` requests to Flask backend running on http://127.0.0.1
 - NGINX proxy forwards `Host` and `X-Real-IP` headers so backend can see the original client info
 
+## Application Components
+
+Backend (backend/)
+  - app.py - Flask app with all 4 CRUD routes (GET, POST, PUT, DELETE)
+  - requirements.txt - application dependency modules
+  - .env.example - template for DB credentials
+  - setup.sql - creates the `course_tracker` database and `courses` table with dummy data
+
+Frontend (frontend/)
+  - public/index.html - Bootstrap 5 loaded via CDN
+  - src/index.js - React entry point
+  - src/App.js - root component, manages courses list, handles fetch calls for all CRUD operations
+  - src/components/CourseTable.jsx - table displaying course details
+  - src/components/CourseForm.jsx -add/edit form
+
 ## High Level Deployment Overview
 
 Deploying the `course-tracker` application is done with the following high level steps:
@@ -95,27 +110,16 @@ npm run build          # creates frontend/build/
 
 ---
 
-## Application Components
+## Application maintenance and updates via CI/CD
 
-Backend (backend/)
-  - app.py - Flask app with all 4 CRUD routes (GET, POST, PUT, DELETE)
-  - requirements.txt - application dependency modules
-  - .env.example - template for DB credentials
-  - setup.sql - creates the `course_tracker` database and `courses` table with dummy data
+This repository uses a simple CI/CD pipeline that deploys the full stack app to the remote server instance each time a change is commited to the main branch. 
 
-Frontend (frontend/)
-  - public/index.html - Bootstrap 5 loaded via CDN
-  - src/index.js - React entry point
-  - src/App.js - root component, manages courses list, handles fetch calls for all CRUD operations
-  - src/components/CourseTable.jsx - table displaying course details
-  - src/components/CourseForm.jsx -add/edit form
-
----
-
-## Application maintenance and updates
-
-
-
+The Github workflow performs the following actions:
+- SSH into the remote VM using secrets (VM_IP, VM_USER, SSH_PRIVATE_KEY)
+- Pulls the latest code to the server from the main branch
+- Installs Python dependencies from backend/requirements.txt
+- Builds the React frontend (npm install && npm run build).
+- Restarts the Flask backend via systemctl restart course-tracker.service.
 
 ## How to run locally
 
