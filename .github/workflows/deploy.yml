@@ -20,7 +20,7 @@ jobs:
             cd /home/ec2-user/course-tracker
 
             # Pull latest code
-            git pull origin main
+            git pull origin master
 
             # Install/update Python dependencies
             pip3 install -r backend/requirements.txt
