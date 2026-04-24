@@ -1,6 +1,6 @@
-# ITMD 504 Programming and Application Foundations - Summative Course Assessement Project
+# ITMD 504 Programming and Application Foundations - Summative Course Assessment Project
 
-Course Tracker the final project for ITMD-504 (Programming Application Foundations). 
+Course Tracker is the final project for ITMD-504 (Programming Application Foundations). 
 
 It's a full-stack CRUD app with:
 
@@ -42,7 +42,7 @@ Deploying the `course-tracker` application is done with the following high level
 2. Configure the VM with Ansible
 3. Deploy the application source code to remote server
 4. Initial application configuration (frontend and backend)
-5. Application updates and mainteance
+5. Application updates and maintenance
 
 ---
 
@@ -70,20 +70,20 @@ Clone the application code:
 
 ```bash
 cd ~
-git clone git@github.com:mariuszczyz/course-tracker.git
+git clone git@github.com:mariuszczyz/itmd-504-final.git
 cd course-tracker
 ```
 
 Load the `course-tracker` database schema and pre-seed the DB with data
 
 ```bash
-mariadb -u tracker -p <DB PASSWORD> < ~/course-tracker/backend/setup.sql
+mariadb -u tracker -p <DB PASSWORD> < ~/itmd-504-final/backend/setup.sql
 ```
 
 ### Backend (Flask)
 
 ```bash
-cd ~/course-tracker/backend
+cd ~/itmd-504-final/backend
 pip install -r requirements.txt
 cp .env.example .env   # fill in your MySQL password
 python app.py          # http://localhost:5000
@@ -92,7 +92,7 @@ python app.py          # http://localhost:5000
 ### Frontend (React production build)
 
 ```bash
-cd ~/course-tracker/frontend
+cd ~/itmd-504-final/frontend
 ```
 
 Point the app at the live API before building:
@@ -141,28 +141,28 @@ python app.py          # http://localhost:5000
 ### Frontend (React build)
 
 ```bash
-cd ~/final/frontend
+cd ~/itmd-504-final/frontend
 ```
 
 Build:
 
 ```bash
 npm install
-npm run build          # creates frontend/build/
+npm run build # creates frontend/build/
 ```
 
 ### Verify
 
 ```bash
-curl http://localhost/api/courses      # should return JSON array
+curl http://localhost/api/courses # should return JSON array
 ```
 
-Open http://127.0.0.1:5000 in a browser — the Course Tracker UI should load.
+Open http://127.0.0.1:5000 in a browser the Course Tracker UI should load.
 
 ## Updating after a code change
 
 ```bash
-cd ~/final
+cd ~/itmd-504-final
 git pull
 ```
 
